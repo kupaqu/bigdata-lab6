@@ -6,7 +6,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.dataframe import DataFrame
 
 from logger import Logger
-from preprocess import read_csv, assemble, scale, df_to_dbtable, dbtable_to_df
+from preprocess import read_and_prep, df_to_dbtable, dbtable_to_df, scale, assemble
 from database import Database
 
 SHOW_LOG = True
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     data_path = config['data']['openfoodfacts']
 
     # load csv to clickhouse
-    df = read_csv(data_path, spark)
+    df = read_and_prep(data_path, spark)
     df_to_dbtable(df, 'lab6.openfoodfacts', db)
 
     # download from clickhouse

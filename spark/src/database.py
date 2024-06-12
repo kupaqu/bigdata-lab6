@@ -68,6 +68,7 @@ class Database:
             self.log.error(f'Error inserting data: {e}')
 
     def read_dbtable(self, dbtable: str) -> DataFrame:
+        self.log.info(f'Reading {dbtable} from database.')
         jdbcDF = self.spark.read \
             .format('jdbc') \
                 .option('driver', self.driver) \
@@ -77,10 +78,12 @@ class Database:
                                 .option('password', '') \
                                     .load() \
                                         .drop('id')
+        self.log.info(f'{dbtable} readed from database.')
 
         return jdbcDF
     
     def write_dbtable(self, df: DataFrame, dbtable: str):
+        self.log.info(f'Writing {dbtable} to database.')
         df.select('*').withColumn('id', monotonically_increasing_id()) \
             .write \
                 .mode('overwrite') \
@@ -92,3 +95,4 @@ class Database:
                                         .option('password', '') \
                                             .option('createTableOptions', 'engine=MergeTree() order by (id)') \
                                                 .save()
+        self.log.info(f'{dbtable} written to database.')
